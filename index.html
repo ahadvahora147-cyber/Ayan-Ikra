@@ -331,9 +331,9 @@
 </head>
 <body>
 
-  <!-- Audio Element -->
+  <!-- Updated Wedding Background Music Track -->
   <audio id="bg-music" loop>
-    <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3" type="audio/mpeg">
+    <source src="https://cdn.pixabay.com/download/audio/2023/04/26/audio_946b2b5420.mp3" type="audio/mpeg">
   </audio>
 
   <div class="audio-control" onclick="toggleAudio()" title="Toggle Music">🎵</div>
@@ -459,8 +459,8 @@
         Kheda, Gujarat
       </p>
 
-      <!-- Google Maps Link Button -->
-      <a href="https://maps.app.goo.gl/EFmGYfiTsSV259vG8?g_st=ac" target="_blank" class="btn">
+      <!-- Updated Google Maps Link Button -->
+      <a href="https://maps.app.goo.gl/uQvwHw3gEJRJDnjo9?g_st=ac" target="_blank" class="btn">
         📍 Open Location on Google Maps
       </a>
     </div>
@@ -476,18 +476,16 @@
     function startVideo() {
       videoOverlay.style.display = 'none';
 
-      // Attempt video playback
       introVideo.muted = false;
       
       const playPromise = introVideo.play();
       if (playPromise !== undefined) {
         playPromise.catch((err) => {
           console.log("Playback error, bypassing video:", err);
-          finishVideo(); // Auto bypass to main invitation if media fails
+          finishVideo();
         });
       }
 
-      // Safety Timeout: if video hangs or fails to play after 3.5s, auto skip
       setTimeout(() => {
         if (!introVideo.ended && introVideo.currentTime === 0) {
           finishVideo();
@@ -495,7 +493,6 @@
       }, 3500);
     }
 
-    // Automatically transition to the card when the video ends
     introVideo.addEventListener('ended', finishVideo);
     introVideo.addEventListener('error', finishVideo);
 
