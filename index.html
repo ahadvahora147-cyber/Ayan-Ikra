@@ -341,7 +341,7 @@
   <!-- Video Intro Overlay Screen -->
   <div class="video-wrapper" id="video-wrapper">
     <video id="intro-video" playsinline muted autoplay preload="auto">
-      <source src="intro.mp4" type="video/mp4">
+      <source src="introa.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
 
@@ -478,14 +478,14 @@
       videoOverlay.style.display = 'none';
       skipBtn.style.display = 'block';
 
-      // Unmute video upon user click interaction
+      // Unmute video upon user tap
       introVideo.muted = false;
       introVideo.currentTime = 0;
 
       const playPromise = introVideo.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {
-          // Fallback if browser blocks unmuted audio
+          // Fallback if mobile browser blocks unmuted play
           introVideo.muted = true;
           introVideo.play();
         });
