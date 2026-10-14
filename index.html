@@ -340,7 +340,7 @@
 
   <!-- Video Intro Overlay Screen -->
   <div class="video-wrapper" id="video-wrapper">
-    <video id="intro-video" playsinline muted autoplay preload="auto">
+    <video id="intro-video" playsinline muted preload="auto">
       <source src="introa.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
@@ -350,7 +350,7 @@
       <div class="overlay-text">Tap to Open Invitation</div>
     </div>
 
-    <button class="skip-btn" id="skip-btn" onclick="finishVideo()" style="display: none;">Skip</button>
+    <button class="skip-btn" id="skip-btn" onclick="finishVideo()" style="display: block;">Skip Intro</button>
   </div>
 
   <!-- Main Invitation Webpage -->
@@ -471,28 +471,33 @@
     const videoWrapper = document.getElementById('video-wrapper');
     const introVideo = document.getElementById('intro-video');
     const videoOverlay = document.getElementById('video-overlay');
-    const skipBtn = document.getElementById('skip-btn');
     const invitation = document.getElementById('invitation');
 
     function startVideo() {
       videoOverlay.style.display = 'none';
-      skipBtn.style.display = 'block';
 
-      // Unmute video upon user tap
+      // Attempt video playback
       introVideo.muted = false;
-      introVideo.currentTime = 0;
-
+      
       const playPromise = introVideo.play();
       if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          // Fallback if mobile browser blocks unmuted play
-          introVideo.muted = true;
-          introVideo.play();
+        playPromise.catch((err) => {
+          console.log("Playback error, bypassing video:", err);
+          finishVideo(); // Auto bypass to main invitation if media fails
         });
       }
+
+      // Safety Timeout: if video hangs or fails to play after 3.5s, auto skip
+      setTimeout(() => {
+        if (!introVideo.ended && introVideo.currentTime === 0) {
+          finishVideo();
+        }
+      }, 3500);
     }
 
+    // Automatically transition to the card when the video ends
     introVideo.addEventListener('ended', finishVideo);
+    introVideo.addEventListener('error', finishVideo);
 
     function finishVideo() {
       videoWrapper.classList.add('hidden');
@@ -500,7 +505,7 @@
         videoWrapper.style.display = 'none';
         invitation.classList.add('visible');
         playAudio();
-      }, 800);
+      }, 600);
     }
 
     // Audio Playback
