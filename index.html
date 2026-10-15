@@ -331,16 +331,16 @@
 </head>
 <body>
 
-  <!-- Updated Wedding Background Music Track -->
-  <audio id="bg-music" loop>
-    <source src="https://cdn.pixabay.com/download/audio/2023/04/26/audio_946b2b5420.mp3" type="audio/mpeg">
+  <!-- Background Music (Plays after video finishes) -->
+  <audio id="bg-music" loop preload="auto">
+    <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3" type="audio/mpeg">
   </audio>
 
   <div class="audio-control" onclick="toggleAudio()" title="Toggle Music">🎵</div>
 
-  <!-- Video Intro Overlay Screen -->
+  <!-- Video Intro Overlay Screen (Plays introa.mp4 with its own sound) -->
   <div class="video-wrapper" id="video-wrapper">
-    <video id="intro-video" playsinline muted preload="auto">
+    <video id="intro-video" playsinline preload="auto">
       <source src="introa.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
@@ -459,7 +459,7 @@
         Kheda, Gujarat
       </p>
 
-      <!-- Updated Google Maps Link Button -->
+      <!-- Google Maps Link Button -->
       <a href="https://maps.app.goo.gl/uQvwHw3gEJRJDnjo9?g_st=ac" target="_blank" class="btn">
         📍 Open Location on Google Maps
       </a>
@@ -472,47 +472,55 @@
     const introVideo = document.getElementById('intro-video');
     const videoOverlay = document.getElementById('video-overlay');
     const invitation = document.getElementById('invitation');
+    const audio = document.getElementById('bg-music');
+    let isPlaying = false;
 
     function startVideo() {
       videoOverlay.style.display = 'none';
 
+      // Ensure video sound is unmuted and plays when tapped
       introVideo.muted = false;
-      
       const playPromise = introVideo.play();
+      
       if (playPromise !== undefined) {
         playPromise.catch((err) => {
-          console.log("Playback error, bypassing video:", err);
+          console.log("Video playback error, bypassing video:", err);
           finishVideo();
         });
       }
 
+      // Safety timeout: auto-skip if video takes too long to load
       setTimeout(() => {
         if (!introVideo.ended && introVideo.currentTime === 0) {
           finishVideo();
         }
-      }, 3500);
+      }, 4000);
     }
 
     introVideo.addEventListener('ended', finishVideo);
     introVideo.addEventListener('error', finishVideo);
 
     function finishVideo() {
+      // Pause/hide video wrapper
+      introVideo.pause();
       videoWrapper.classList.add('hidden');
+      
+      // Start background music once video finishes/skips
+      playAudio();
+
       setTimeout(() => {
         videoWrapper.style.display = 'none';
         invitation.classList.add('visible');
-        playAudio();
       }, 600);
     }
 
-    // Audio Playback
-    const audio = document.getElementById('bg-music');
-    let isPlaying = false;
-
     function playAudio() {
+      audio.volume = 1.0;
       audio.play().then(() => {
         isPlaying = true;
-      }).catch(() => {});
+      }).catch((e) => {
+        console.log("Background audio play blocked:", e);
+      });
     }
 
     function toggleAudio() {
@@ -520,8 +528,7 @@
         audio.pause();
         isPlaying = false;
       } else {
-        audio.play();
-        isPlaying = true;
+        playAudio();
       }
     }
 
