@@ -331,14 +331,14 @@
 </head>
 <body>
 
-  <!-- Background Music (Plays after video finishes) -->
+  <!-- Custom Background Music File -->
   <audio id="bg-music" loop preload="auto">
-    <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3" type="audio/mpeg">
+    <source src="audiowed.mp3" type="audio/mpeg">
   </audio>
 
   <div class="audio-control" onclick="toggleAudio()" title="Toggle Music">🎵</div>
 
-  <!-- Video Intro Overlay Screen (Plays introa.mp4 with its own sound) -->
+  <!-- Video Intro Overlay Screen -->
   <div class="video-wrapper" id="video-wrapper">
     <video id="intro-video" playsinline preload="auto">
       <source src="introa.mp4" type="video/mp4">
@@ -465,7 +465,7 @@
       </a>
     </div>
 
-  </div>
+</div>
 
   <script>
     const videoWrapper = document.getElementById('video-wrapper');
@@ -478,7 +478,6 @@
     function startVideo() {
       videoOverlay.style.display = 'none';
 
-      // Ensure video sound is unmuted and plays when tapped
       introVideo.muted = false;
       const playPromise = introVideo.play();
       
@@ -489,7 +488,6 @@
         });
       }
 
-      // Safety timeout: auto-skip if video takes too long to load
       setTimeout(() => {
         if (!introVideo.ended && introVideo.currentTime === 0) {
           finishVideo();
@@ -501,11 +499,9 @@
     introVideo.addEventListener('error', finishVideo);
 
     function finishVideo() {
-      // Pause/hide video wrapper
       introVideo.pause();
       videoWrapper.classList.add('hidden');
       
-      // Start background music once video finishes/skips
       playAudio();
 
       setTimeout(() => {
