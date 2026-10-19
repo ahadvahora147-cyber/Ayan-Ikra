@@ -345,14 +345,14 @@
 
   <div class="audio-control" onclick="toggleAudio()" title="Toggle Music">🎵</div>
 
-  <!-- Video Intro Overlay Screen -->
+  <!-- Video Intro Overlay Screen (Removed muted attribute for iOS) -->
   <div class="video-wrapper" id="video-wrapper">
-    <video id="intro-video" playsinline preload="auto">
+    <video id="intro-video" playsinline webkit-playsinline preload="auto">
       <source src="introa.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
 
-    <div class="video-overlay" id="video-overlay" onclick="startVideo()">
+    <div class="video-overlay" id="video-overlay">
       <div class="play-btn-circle">▶</div>
       <div class="overlay-text">Tap to Open Invitation</div>
     </div>
@@ -482,15 +482,20 @@
     const audio = document.getElementById('bg-music');
     let isPlaying = false;
 
-    function startVideo() {
+    function handleStartVideo(e) {
+      if (e) e.preventDefault();
       videoOverlay.style.display = 'none';
 
+      // Explicitly un-mute and load audio stream for iOS Safari
       introVideo.muted = false;
+      introVideo.volume = 1.0;
+      introVideo.currentTime = 0;
+
       const playPromise = introVideo.play();
       
       if (playPromise !== undefined) {
         playPromise.catch((err) => {
-          console.log("Video playback error, bypassing video:", err);
+          console.log("iOS Video Playback Restricted:", err);
           finishVideo();
         });
       }
@@ -501,6 +506,10 @@
         }
       }, 4000);
     }
+
+    // Attach explicit touch and click listeners for iOS
+    videoOverlay.addEventListener('touchstart', handleStartVideo, { passive: false });
+    videoOverlay.addEventListener('click', handleStartVideo);
 
     introVideo.addEventListener('ended', finishVideo);
     introVideo.addEventListener('error', finishVideo);
