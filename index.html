@@ -350,7 +350,7 @@
 
   <!-- Video Intro Overlay Screen -->
   <div class="video-wrapper" id="video-wrapper">
-    <video id="intro-video" playsinline webkit-playsinline preload="auto">
+    <video id="intro-video" playsinline webkit-playsinline x5-playsinline preload="auto">
       <source src="introa.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
@@ -484,8 +484,12 @@
     const invitation = document.getElementById('invitation');
     const audio = document.getElementById('bg-music');
     let isPlaying = false;
+    let hasStarted = false;
 
     function handleStartVideo(e) {
+      if (hasStarted) return;
+      hasStarted = true;
+
       if (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -493,33 +497,38 @@
       
       videoOverlay.style.display = 'none';
 
-      // Unmute and play video with sound
+      // Force unmute explicitly for iOS Safari audio policies
       introVideo.muted = false;
       introVideo.volume = 1.0;
-      
+      introVideo.currentTime = 0;
+
+      // Unlock and play video audio stream immediately inside the user touch scope
       const playPromise = introVideo.play();
       
       if (playPromise !== undefined) {
         playPromise.catch((err) => {
-          console.log("Video play restricted, skipping:", err);
+          console.log("iOS Video Audio restricted:", err);
           finishVideo();
         });
       }
 
-      // Fallback timeout in case video event doesn't trigger
+      // Safety timeout: if video takes too long or fails to load audio stream
       setTimeout(() => {
-        if (!introVideo.ended && introVideo.currentTime === 0) {
+        if (introVideo.paused && !invitation.classList.contains('visible')) {
           finishVideo();
         }
-      }, 5000);
+      }, 3500);
     }
 
-    // Listen to both touch and click events on the overlay
-    videoOverlay.addEventListener('touchend', handleStartVideo, { passive: false });
+    // Bind both touchstart and click to capture iOS physical touch immediately
+    videoOverlay.addEventListener('touchstart', handleStartVideo, { passive: false });
     videoOverlay.addEventListener('click', handleStartVideo);
+    videoWrapper.addEventListener('click', handleStartVideo);
 
     introVideo.addEventListener('ended', finishVideo);
-    introVideo.addEventListener('error', finishVideo);
+    introVideo.addEventListener('error', function() {
+      finishVideo();
+    });
 
     function finishVideo() {
       introVideo.pause();
@@ -530,7 +539,7 @@
       setTimeout(() => {
         videoWrapper.style.display = 'none';
         invitation.classList.add('visible');
-      }, 600);
+      }, 500);
     }
 
     function playAudio() {
