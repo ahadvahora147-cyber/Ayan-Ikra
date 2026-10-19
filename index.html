@@ -330,4 +330,241 @@
       cursor: pointer;
       margin-top: 15px;
       box-shadow: 0 4px 15px rgba(184, 155, 167, 0.4);
-      transition: all 0.
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: linear-gradient(135deg, #d69bb0, #a395a1) !important;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Custom Background Music File -->
+  <audio id="bg-music" loop preload="auto">
+    <source src="audiowed.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="audio-control" onclick="toggleAudio()" title="Toggle Music">🎵</div>
+
+  <!-- Video Intro Overlay Screen -->
+  <div class="video-wrapper" id="video-wrapper">
+    <video id="intro-video" playsinline webkit-playsinline preload="auto">
+      <source src="introa.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+
+    <div class="video-overlay" id="video-overlay">
+      <div class="play-btn-circle">▶</div>
+      <div class="overlay-text">Tap to Open Invitation</div>
+    </div>
+
+    <button class="skip-btn" id="skip-btn" onclick="finishVideo()" style="display: block;">Skip Intro</button>
+  </div>
+
+  <!-- Main Invitation Webpage -->
+  <div class="invitation-container" id="invitation">
+    
+    <!-- Couple & Welcome Card -->
+    <div class="card">
+      <div class="arabic-bismillah">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>
+      <div class="subtitle">Together with their families</div>
+      
+      <div class="names">
+        Ayan
+        <span class="ampersand">&amp;</span>
+        Ikra
+      </div>
+
+      <div class="subtitle">Invite you to celebrate their wedding ceremony</div>
+
+      <div class="arabic-quote">" وَخَلَقْنَاكُمْ أَزْوَاجًا "</div>
+      <div class="quote-translation">"And We created you in pairs" — Surah An-Naba (78:8)</div>
+    </div>
+
+    <!-- Live Countdown Card -->
+    <div class="card">
+      <div class="subtitle">Countdown to 1/1/2027</div>
+
+      <div class="countdown-grid">
+        <div class="time-box">
+          <div class="time-num" id="days">00</div>
+          <div class="time-label">Days</div>
+        </div>
+        <div class="time-box">
+          <div class="time-num" id="hours">00</div>
+          <div class="time-label">Hours</div>
+        </div>
+        <div class="time-box">
+          <div class="time-num" id="mins">00</div>
+          <div class="time-label">Mins</div>
+        </div>
+        <div class="time-box">
+          <div class="time-num" id="secs">00</div>
+          <div class="time-label">Secs</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mehendi Ceremony Card -->
+    <div class="card">
+      <div class="function-badge">Day 1 Celebration</div>
+      <div class="event-heading">Mehendi Ceremony</div>
+
+      <div class="event-datetime">
+        FRIDAY, 1ST JANUARY, 2027 • 4 PM ONWARDS
+      </div>
+
+      <div class="event-desc">
+        Watch as the bride gets coloured in the deep stain of love and finish the day with musical night.
+      </div>
+
+      <div class="theme-tag">
+        <strong>Theme:</strong> Dark & vibrant shades
+      </div>
+    </div>
+
+    <!-- Haldi Ceremony Card -->
+    <div class="card">
+      <div class="function-badge">Day 2 Celebration</div>
+      <div class="event-heading">Haldi Ceremony</div>
+
+      <div class="event-datetime">
+        SATURDAY, 2ND JANUARY, 2027 • 4 PM ONWARDS
+      </div>
+
+      <div class="event-desc">
+        Playful, fun and filled with laughter, celebrate the haldi ceremony with the couple and cover them with colours of haldi.
+      </div>
+
+      <div class="theme-tag">
+        <strong>Theme:</strong> Pastel shades
+      </div>
+    </div>
+
+    <!-- Nikah Ceremony Card -->
+    <div class="card">
+      <div class="function-badge">Main Event</div>
+      <div class="event-heading">Nikah Ceremony</div>
+
+      <div class="event-datetime">
+        SUNDAY, 3RD JANUARY, 2027 • 4 PM ONWARDS
+      </div>
+
+      <div class="event-desc">
+        The day we say 'Qubool hai' and unite by the will of Allah, join us to witness the beautiful beginning of a new chapter with love and laughter.
+      </div>
+    </div>
+
+    <!-- Venue Location Card -->
+    <div class="card">
+      <div class="subtitle">Venue Location (All Days)</div>
+
+      <p style="font-size: 1.4rem; font-weight: 600; color: var(--text-dark); margin-top: 8px;">
+        Noor Farm House
+      </p>
+
+      <p style="font-family: 'Montserrat', sans-serif; color: var(--text-muted); margin: 6px 0 15px; font-size: 0.85rem;">
+        Kheda, Gujarat
+      </p>
+
+      <!-- Google Maps Link Button -->
+      <a href="https://maps.app.goo.gl/uQvwHw3gEJRJDnjo9?g_st=ac" target="_blank" class="btn">
+        📍 Open Location on Google Maps
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    const videoWrapper = document.getElementById('video-wrapper');
+    const introVideo = document.getElementById('intro-video');
+    const videoOverlay = document.getElementById('video-overlay');
+    const invitation = document.getElementById('invitation');
+    const audio = document.getElementById('bg-music');
+    let isPlaying = false;
+
+    function handleStartVideo(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      
+      videoOverlay.style.display = 'none';
+
+      // Unmute and play video with sound
+      introVideo.muted = false;
+      introVideo.volume = 1.0;
+      
+      const playPromise = introVideo.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          console.log("Video play restricted, skipping:", err);
+          finishVideo();
+        });
+      }
+
+      // Fallback timeout in case video event doesn't trigger
+      setTimeout(() => {
+        if (!introVideo.ended && introVideo.currentTime === 0) {
+          finishVideo();
+        }
+      }, 5000);
+    }
+
+    // Listen to both touch and click events on the overlay
+    videoOverlay.addEventListener('touchend', handleStartVideo, { passive: false });
+    videoOverlay.addEventListener('click', handleStartVideo);
+
+    introVideo.addEventListener('ended', finishVideo);
+    introVideo.addEventListener('error', finishVideo);
+
+    function finishVideo() {
+      introVideo.pause();
+      videoWrapper.classList.add('hidden');
+      
+      playAudio();
+
+      setTimeout(() => {
+        videoWrapper.style.display = 'none';
+        invitation.classList.add('visible');
+      }, 600);
+    }
+
+    function playAudio() {
+      audio.volume = 1.0;
+      audio.play().then(() => {
+        isPlaying = true;
+      }).catch((e) => {
+        console.log("Background audio play blocked:", e);
+      });
+    }
+
+    function toggleAudio() {
+      if (isPlaying) {
+        audio.pause();
+        isPlaying = false;
+      } else {
+        playAudio();
+      }
+    }
+
+    // Countdown Timer set to January 1, 2027 16:00:00
+    const targetDate = new Date("Jan 1, 2027 16:00:00").getTime();
+
+    setInterval(() => {
+      const now = new Date().getTime();
+      const diff = targetDate - now;
+
+      if (diff > 0) {
+        document.getElementById('days').innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
+        document.getElementById('hours').innerText = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        document.getElementById('mins').innerText = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        document.getElementById('secs').innerText = Math.floor((diff % (1000 * 60)) / 1000);
+      }
+    }, 1000);
+  </script>
+</body>
+</html>
