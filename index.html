@@ -497,38 +497,25 @@
       
       videoOverlay.style.display = 'none';
 
-      // Force unmute explicitly for iOS Safari audio policies
+      // Keep video unmuted with full volume, relying on direct user touch to satisfy mobile browser policies
       introVideo.muted = false;
       introVideo.volume = 1.0;
-      introVideo.currentTime = 0;
-
-      // Unlock and play video audio stream immediately inside the user touch scope
+      
       const playPromise = introVideo.play();
       
       if (playPromise !== undefined) {
         playPromise.catch((err) => {
-          console.log("iOS Video Audio restricted:", err);
+          console.log("Video play error:", err);
           finishVideo();
         });
       }
-
-      // Safety timeout: if video takes too long or fails to load audio stream
-      setTimeout(() => {
-        if (introVideo.paused && !invitation.classList.contains('visible')) {
-          finishVideo();
-        }
-      }, 3500);
     }
 
-    // Bind both touchstart and click to capture iOS physical touch immediately
-    videoOverlay.addEventListener('touchstart', handleStartVideo, { passive: false });
+    videoOverlay.addEventListener('touchend', handleStartVideo, { passive: false });
     videoOverlay.addEventListener('click', handleStartVideo);
-    videoWrapper.addEventListener('click', handleStartVideo);
 
     introVideo.addEventListener('ended', finishVideo);
-    introVideo.addEventListener('error', function() {
-      finishVideo();
-    });
+    introVideo.addEventListener('error', finishVideo);
 
     function finishVideo() {
       introVideo.pause();
